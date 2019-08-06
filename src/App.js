@@ -8,6 +8,7 @@ import {
 import Home from './pages/Home'
 import City from './pages/City/index.js'
 import Map from './pages/Map'
+import NotFound from './pages/NotFound'
 
 class App extends React.Component {
   render() {
@@ -18,6 +19,7 @@ class App extends React.Component {
           <Route path="/home" component={Home} />
           <Route path="/city" component={City} />
           <Route path="/map" component={Map} />
+          <Route component={NotFound} />
         </Switch>
       </Router>
     )
