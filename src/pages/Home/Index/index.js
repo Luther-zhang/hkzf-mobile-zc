@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Carousel, Flex, Grid } from 'antd-mobile'
 import axios from 'axios'
+import { getCurrentCity } from 'utils'
 import Nav1 from 'assets/images/nav-1.png'
 import Nav2 from 'assets/images/nav-2.png'
 import Nav3 from 'assets/images/nav-3.png'
@@ -29,27 +30,14 @@ class Index extends React.Component {
     cityName: '北京'
   }
   // 挂载钩子
-  componentDidMount() {
+  async componentDidMount() {
     this.getSwipers()
     this.getGroups()
     this.getNews()
-    // IP定位城市
-    const myCity = new window.BMap.LocalCity()
-    // BMap方法得到城市名，根据城市名发送ajax
-    myCity.get(async result => {
-      const name = result.name
-      const res = await axios.get('http://localhost:8080/area/info', {
-        params: {
-          name
-        }
-      })
-      const { status, body } = res.data
-      if (status === 200) {
-        localStorage.getItem('current_city', JSON.stringify(body))
-        this.setState({
-          cityName: body.label
-        })
-      }
+    // IP定位城市, 使用工具函数获取
+    const city = await getCurrentCity()
+    this.setState({
+      cityName: city.label
     })
   }
   // 请求轮播图数据
