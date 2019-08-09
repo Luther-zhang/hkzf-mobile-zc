@@ -4,7 +4,7 @@ import Index from './Index/index.js'
 import House from './House'
 import News from './News'
 import My from './My'
-import './index.scss'
+import styles from './index.module.scss'
 // 导入TabBar组件
 import { TabBar } from 'antd-mobile'
 
@@ -65,7 +65,7 @@ class Home extends React.Component {
   }
   render() {
     return (
-      <div className="home">
+      <div className={styles.home}>
         {/* 配置路由规则 */}
         <Route exact path="/home" component={Index} />
         <Route path="/home/house" component={House} />

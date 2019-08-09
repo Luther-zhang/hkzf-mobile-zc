@@ -6,7 +6,7 @@ function getCity() {
   return JSON.parse(localStorage.getItem(CURRENT_CITY))
 }
 // 设置城市 --->字符串
-function setCity(city) {
+export function setCity(city) {
   localStorage.setItem(CURRENT_CITY, JSON.stringify(city))
 }
 // 暴露方法 获取当前城市

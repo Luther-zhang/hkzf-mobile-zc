@@ -7,7 +7,7 @@ import Nav1 from 'assets/images/nav-1.png'
 import Nav2 from 'assets/images/nav-2.png'
 import Nav3 from 'assets/images/nav-3.png'
 import Nav4 from 'assets/images/nav-4.png'
-import './index.scss'
+import styles from './index.module.scss'
 
 const navList = [
   { title: '整租', img: Nav1, path: '/home/house' },
@@ -89,7 +89,7 @@ class Index extends React.Component {
             className="location"
             onClick={() => this.props.history.push('/city')}
           >
-            <span className="name">上海</span>
+            <span className="name">{this.state.cityName}</span>
             <i className="iconfont icon-arrow"> </i>
           </div>
           <div
@@ -210,7 +210,7 @@ class Index extends React.Component {
   }
   render() {
     return (
-      <div className="index">
+      <div className={styles.index}>
         <div className="swiper" style={{ height: this.state.imgHeight }}>
           {/* 搜索框 */}
           {this.renderSearch()}

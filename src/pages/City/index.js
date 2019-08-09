@@ -1,20 +1,30 @@
 import React from 'react'
-import { NavBar } from 'antd-mobile'
+import { Toast } from 'antd-mobile'
 import axios from 'axios'
-import { getCurrentCity } from 'utils'
+import { getCurrentCity, setCity } from 'utils'
 import { List, AutoSizer } from 'react-virtualized'
-import './index.scss'
+import styles from './index.module.scss'
+import NavHeader from 'common/NavHeader'
 const TITLE_HEIGHT = 36
 const CITY_HEIGHT = 50
+// 有房源的城市
+const CITYS = ['北京', '上海', '广州', '深圳']
 
 class City extends React.Component {
-  state = {
-    shortList: [],
-    cityObj: {},
-    currentIndex: 0
+  constructor(props) {
+    super(props)
+    this.state = {
+      shortList: [],
+      cityObj: {},
+      currentIndex: 0
+    }
+    // 获取dom
+    this.listRef = React.createRef()
   }
-  componentDidMount() {
-    this.getCityList()
+  async componentDidMount() {
+    await this.getCityList()
+    // List的方法，预测量所有行的高度
+    this.listRef.current.measureAllRows()
   }
   // 城市数据格式调整
   forMatData(list) {
@@ -64,11 +74,25 @@ class City extends React.Component {
       return title.toUpperCase()
     }
   }
+  // 城市名称的点击事件，有房源的存储并返回上一层，没有的弹出提示框
+  selectCity(city) {
+    if (CITYS.includes(city.label)) {
+      setCity(city)
+      this.props.history.go(-1)
+    } else {
+      Toast.info('该城市暂无房源信息', 1, null, false)
+    }
+  }
+
   // 计算动态行高
   caclHeight({ index }) {
     const letter = this.state.shortList[index]
     const list = this.state.cityObj[letter]
     return TITLE_HEIGHT + list.length * CITY_HEIGHT
+  }
+  // 索引的点击事件，通过索引号让对应的行置顶
+  scrollToRow(index) {
+    this.listRef.current.scrollToRow(index)
   }
   // 渲染每一行
   rowRenderer({
@@ -86,7 +110,11 @@ class City extends React.Component {
       <div key={key} style={style} className="city-item">
         <div className="title">{this.formatTitle(letter)}</div>
         {list.map(item => (
-          <div key={item.value} className="name">
+          <div
+            key={item.value}
+            className="name"
+            onClick={this.selectCity.bind(this, item)}
+          >
             {item.label}
           </div>
         ))}
@@ -98,7 +126,11 @@ class City extends React.Component {
     return (
       <ul className="city-index">
         {this.state.shortList.map((item, index) => (
-          <li key={item} className="city-index-item">
+          <li
+            key={item}
+            className="city-index-item"
+            onClick={this.scrollToRow.bind(this, index)}
+          >
             <span
               className={
                 index === this.state.currentIndex ? 'index-active' : ''
@@ -121,25 +153,25 @@ class City extends React.Component {
 
   render() {
     return (
-      <div className="city">
-        <NavBar
-          className="navBar"
-          mode="light"
-          icon={<i className="iconfont icon-back" />}
-          onLeftClick={() => this.props.history.go(-1)}
-        >
-          城市列表
-        </NavBar>
+      /* 
+        css module 中，对于驼峰命名，正常使用.语法，
+        对于非正常的的命名，如 nav-bar,可以使用[]语法 
+      */
+      <div className={styles.city}>
+        {/* 头部导航栏组件 */}
+        <NavHeader>城市列表</NavHeader>
         {/* 长列表 渲染城市列表 */}
         <AutoSizer>
           {({ height, width }) => (
             <List
+              ref={this.listRef}
               width={width}
               height={height}
               rowCount={this.state.shortList.length}
               rowHeight={this.caclHeight.bind(this)}
               rowRenderer={this.rowRenderer.bind(this)}
               onRowsRendered={this.onRowsRendered.bind(this)}
+              scrollToAlignment="start"
             />
           )}
         </AutoSizer>

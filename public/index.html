@@ -34,9 +34,19 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <!-- 需要解决浏览器对于百度地图的报错问题 -->
     <script
       type="text/javascript"
-      src="http://api.map.baidu.com/api?v=3.0&ak=PR1BQqjPoVfgv4xjCENLLdDzR4sON9OP"
+      src="http://api.map.baidu.com/getscript?v=3.0&ak=PR1BQqjPoVfgv4xjCENLLdDzR4sON9OP"
     ></script>
+    <!-- <script>
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src =
+        'http://api.map.baidu.com/getscript?v=3.0&ak=PR1BQqjPoVfgv4xjCENLLdDzR4sON9OP' +
+        '&t=' +
+        new Date()
+      document.body.append(script)
+    </script> -->
   </body>
 </html>
