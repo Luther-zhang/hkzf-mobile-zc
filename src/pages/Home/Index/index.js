@@ -1,13 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Carousel, Flex, Grid } from 'antd-mobile'
-import axios from 'axios'
-import { getCurrentCity } from 'utils'
+import { getCurrentCity, API, BASE_URL } from 'utils'
 import Nav1 from 'assets/images/nav-1.png'
 import Nav2 from 'assets/images/nav-2.png'
 import Nav3 from 'assets/images/nav-3.png'
 import Nav4 from 'assets/images/nav-4.png'
 import styles from './index.module.scss'
+import SearchHeader from 'common/SearchHeader'
 
 const navList = [
   { title: '整租', img: Nav1, path: '/home/house' },
@@ -42,9 +42,9 @@ class Index extends React.Component {
   }
   // 请求轮播图数据
   async getSwipers() {
-    const res = await axios.get('http://localhost:8080/home/swiper')
+    const res = await API.get('home/swiper')
     // console.log(res)
-    const { status, body } = res.data
+    const { status, body } = res
     if (status === 200) {
       this.setState({
         swipers: body,
@@ -54,12 +54,12 @@ class Index extends React.Component {
   }
   // 请求租房小组数据
   async getGroups() {
-    const res = await axios.get('http://localhost:8080/home/groups', {
+    const res = await API.get('home/groups', {
       params: {
         area: 'AREA|88cff55c-aaa4-e2e0'
       }
     })
-    const { status, body } = res.data
+    const { status, body } = res
     if (status === 200) {
       this.setState({
         groups: body
@@ -68,45 +68,17 @@ class Index extends React.Component {
   }
   // 请求资讯数据
   async getNews() {
-    const res = await axios.get('http://localhost:8080/home/news', {
+    const res = await API.get('home/news', {
       params: {
         area: 'AREA%7C88cff55c-aaa4-e2e0'
       }
     })
-    const { status, body } = res.data
+    const { status, body } = res
     if (status === 200) {
       this.setState({
         news: body
       })
     }
-  }
-  // 渲染搜索框
-  renderSearch() {
-    return (
-      <Flex className="search-box">
-        <Flex className="search-form">
-          <div
-            className="location"
-            onClick={() => this.props.history.push('/city')}
-          >
-            <span className="name">{this.state.cityName}</span>
-            <i className="iconfont icon-arrow"> </i>
-          </div>
-          <div
-            className="search-input"
-            onClick={() => this.props.history.push('/search')}
-          >
-            <i className="iconfont icon-seach" />
-            <span className="text">请输入小区地址</span>
-          </div>
-        </Flex>
-        {/* 地图小图标 */}
-        <i
-          className="iconfont icon-map"
-          onClick={() => this.props.history.push('/map')}
-        />
-      </Flex>
-    )
   }
   // 渲染轮播图
   renderSwiper() {
@@ -127,7 +99,7 @@ class Index extends React.Component {
               }}
             >
               <img
-                src={`http://localhost:8080${item.imgSrc}`}
+                src={`${BASE_URL}${item.imgSrc}`}
                 alt=""
                 style={{ width: '100%', verticalAlign: 'top' }}
                 // 图片加载完成，会自动调整图片的高度
@@ -175,7 +147,7 @@ class Index extends React.Component {
                 <p className="title">{item.title}</p>
                 <span className="info">{item.desc}</span>
               </div>
-              <img src={`http://localhost:8080${item.imgSrc}`} alt="" />
+              <img src={`${BASE_URL}${item.imgSrc}`} alt="" />
             </Flex>
           )}
         />
@@ -190,11 +162,7 @@ class Index extends React.Component {
         {this.state.news.map(item => (
           <div className="news-item" key={item.id}>
             <div className="imgwrap">
-              <img
-                className="img"
-                src={`http://localhost:8080${item.imgSrc}`}
-                alt=""
-              />
+              <img className="img" src={`${BASE_URL}${item.imgSrc}`} alt="" />
             </div>
             <Flex className="content" direction="column" justify="between">
               <h3 className="title">{item.title}</h3>
@@ -213,7 +181,7 @@ class Index extends React.Component {
       <div className={styles.index}>
         <div className="swiper" style={{ height: this.state.imgHeight }}>
           {/* 搜索框 */}
-          {this.renderSearch()}
+          <SearchHeader cityName={this.state.cityName} />
           {/* 轮播图 */}
           {this.renderSwiper()}
         </div>

@@ -1,8 +1,8 @@
 import React from 'react'
 import NavHeader from 'common/NavHeader'
 import styles from './index.module.scss'
-import { getCurrentCity } from 'utils'
-import Axios from 'axios'
+import { getCurrentCity, API, BASE_URL } from 'utils'
+import { Toast } from 'antd-mobile'
 
 const BMap = window.BMap
 
@@ -25,12 +25,14 @@ class Map extends React.Component {
   }
 
   async renderOverlays(id) {
+    Toast.loading('加载中...', 0)
     const { type, nextZoom } = this.getTypeAndZoom()
-    const res = await Axios.get(`http://localhost:8080/area/map?id=${id}`)
+    const res = await API.get(`area/map?id=${id}`)
     // console.log(res.data.body)
-    res.data.body.forEach(item => {
+    res.body.forEach(item => {
       this.addOverlay(item, type, nextZoom)
     })
+    Toast.hide()
   }
 
   addOverlay(item, type, nextZoom) {
@@ -58,7 +60,7 @@ class Map extends React.Component {
     const label = new BMap.Label(html, options)
 
     label.setStyle({
-      border: '0px solid #fff',
+      border: 'none',
       padding: 0
     })
     this.map.addOverlay(label)
@@ -73,11 +75,13 @@ class Map extends React.Component {
   }
 
   async getHouses(id) {
-    const res = await Axios.get(`http://localhost:8080/houses?cityId=${id}`)
+    Toast.loading('加载中...', 0)
+    const res = await API.get(`houses?cityId=${id}`)
     this.setState({
       isShow: true,
-      houses: res.data.body.list
+      houses: res.body.list
     })
+    Toast.hide()
   }
 
   createRect(item) {
@@ -96,12 +100,20 @@ class Map extends React.Component {
     const label = new BMap.Label(html, options)
 
     label.setStyle({
-      border: '0px solid #fff',
-      padding: '0px'
+      border: 'none',
+      padding: 0
     })
 
     this.map.addOverlay(label)
-    label.addEventListener('click', () => this.getHouses(item.value))
+    label.addEventListener('click', e => {
+      this.getHouses(item.value)
+      // console.log(e)
+      const clientX = e.changedTouches[0].clientX
+      const clientY = e.changedTouches[0].clientY
+      const x = window.innerWidth / 2 - clientX
+      const y = (window.innerHeight - 330 - 45) / 2 - (clientY - 45)
+      this.map.panBy(x, y)
+    })
   }
 
   getTypeAndZoom() {
@@ -161,7 +173,7 @@ class Map extends React.Component {
         <div className="imgWrap">
           <img
             className="img"
-            src={`http://localhost:8080${item.houseImg}`}
+            src={`${BASE_URL}${item.houseImg}`}
             alt=""
           />
         </div>

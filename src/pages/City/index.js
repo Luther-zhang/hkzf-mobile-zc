@@ -1,7 +1,6 @@
 import React from 'react'
 import { Toast } from 'antd-mobile'
-import axios from 'axios'
-import { getCurrentCity, setCity } from 'utils'
+import { getCurrentCity, setCity, API } from 'utils'
 import { List, AutoSizer } from 'react-virtualized'
 import styles from './index.module.scss'
 import NavHeader from 'common/NavHeader'
@@ -47,13 +46,13 @@ class City extends React.Component {
   }
 
   async getCityList() {
-    const res = await axios.get('http://localhost:8080/area/city?level=1')
-    const { body } = res.data
+    const res = await API.get('area/city?level=1')
+    const { body } = res
     const { cityObj, shortList } = this.forMatData(body)
     // 添加热门城市
-    const hotRes = await axios.get('http://localhost:8080/area/hot')
+    const hotRes = await API.get('area/hot')
     shortList.unshift('hot')
-    cityObj.hot = hotRes.data.body
+    cityObj.hot = hotRes.body
     // 添加当前城市
     const city = await getCurrentCity()
     shortList.unshift('#')
